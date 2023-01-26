@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 
 import { SOCKET_URL } from '../../constants';
 import { useCurrentUser } from '../../hooks/useCurrentUser';
-import { GameIcons, IStep } from '../../types/gamePage';
+import { GameEvents, GameIcons, IStep } from '../../types/gamePage';
 import { IUser } from '../../types/user';
 import { postRequest } from '../../utils/dataLoaders';
 import { winChecker } from '../../utils/winChecker';
@@ -32,17 +32,17 @@ export const GamePage = () => {
 
   useEffect(() => {
     if (currentUser) {
-      socket.on('user join', data => {
+      socket.on(GameEvents.USER_CONNECT, data => {
         if (currentUser?.id !== +data) {
           console.log('user connected', data);
         }
       });
 
-      socket.on('game start', () => {
+      socket.on(GameEvents.GAME_START, () => {
         setIsGameStarted(true);
       });
 
-      socket.on('user move', data => {
+      socket.on(GameEvents.USER_MOVE, data => {
         const { moveIndex, user, icon } = JSON.parse(data);
         if (user.id !== currentUser.id) {
           setUserTurn(true);
@@ -66,14 +66,14 @@ export const GamePage = () => {
         );
       });
 
-      socket.on('set icon', data => {
+      socket.on(GameEvents.SET_ICON, data => {
         const { icon, isFirst } = JSON.parse(data);
 
         setUserIcon(icon);
         setUserTurn(isFirst);
       });
 
-      socket.on('end game', data => {
+      socket.on(GameEvents.END_GAME, data => {
         let resultString = `User ${data} win`;
         if (currentUser.id === +data) {
           resultString += '\n Congratulations';
@@ -83,8 +83,16 @@ export const GamePage = () => {
         setGameResult(resultString);
       });
 
-      socket.emit('user join', JSON.stringify({ user: currentUser, game: gameId }));
+      socket.emit(GameEvents.USER_CONNECT, JSON.stringify({ user: currentUser, game: gameId }));
     }
+
+    return () => {
+      socket.off(GameEvents.USER_CONNECT);
+      socket.off(GameEvents.GAME_START);
+      socket.off(GameEvents.END_GAME);
+      socket.off(GameEvents.USER_MOVE);
+      socket.off(GameEvents.SET_ICON);
+    };
   }, [currentUser]);
 
   useEffect(() => {
@@ -92,7 +100,7 @@ export const GamePage = () => {
     if (result) {
       setUserTurn(false);
       socket.emit(
-        'end game',
+        GameEvents.END_GAME,
         JSON.stringify({ winner: result === userIcon, userId: currentUser?.id, gameId })
       );
     }
@@ -102,7 +110,7 @@ export const GamePage = () => {
     (index: number) => {
       if (userTurn) {
         socket.emit(
-          'user move',
+          GameEvents.USER_MOVE,
           JSON.stringify({ moveIndex: index, gameId, user: currentUser, icon: userIcon })
         );
       }

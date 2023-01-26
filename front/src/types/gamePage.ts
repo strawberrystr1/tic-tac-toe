@@ -9,3 +9,11 @@ export interface IStep {
   user: string;
   icon: number;
 }
+
+export enum GameEvents {
+  USER_CONNECT = 'user join',
+  GAME_START = 'game start',
+  USER_MOVE = 'user move',
+  SET_ICON = 'set icon',
+  END_GAME = 'end game',
+}
