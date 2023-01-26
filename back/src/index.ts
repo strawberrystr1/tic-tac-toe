@@ -5,7 +5,7 @@ import { createServer } from "http";
 import bodyParser from "body-parser";
 import router from "./routes/index";
 import dbClient from "./db";
-import { createSocketHandlers } from "./createSocketHandlers";
+import createSocketHandlers from "./createSocketHandlers";
 
 const runServer = async () => {
   const app = express();
@@ -25,9 +25,11 @@ const runServer = async () => {
   app.set("io", io);
   app.use(router);
 
+  const searchRoomUsers = new Set<number>();
+  const games = {};
+
   io.on("connection", socket => {
-    console.log("user connected", socket.id);
-    createSocketHandlers(socket);
+    createSocketHandlers(socket, searchRoomUsers, games);
   });
 
   const port = process.env.PORT || 4000;

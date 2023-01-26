@@ -1,7 +1,9 @@
+import { useContext, useEffect } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 
+import { UserContext } from '../../App';
 import { IUser } from '../../types/user';
 
 import { Avatar, SideWrapper, Wrapper } from './styled';
@@ -9,8 +11,13 @@ import { Avatar, SideWrapper, Wrapper } from './styled';
 export const Profile = () => {
   const user = useLoaderData() as IUser;
   const navigate = useNavigate();
+  const { setCurrentUser } = useContext(UserContext);
 
   const handleClick = () => navigate('/search');
+
+  useEffect(() => {
+    setCurrentUser(user);
+  }, []);
 
   return (
     <Wrapper>

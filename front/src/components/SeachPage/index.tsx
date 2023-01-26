@@ -1,37 +1,132 @@
 import { useEffect, useState } from 'react';
-// import { useLoaderData } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Typography } from '@mui/material';
 import { io } from 'socket.io-client';
+import { v4 } from 'uuid';
 
 import { SOCKET_URL } from '../../constants';
+import { useCurrentUser } from '../../hooks/useCurrentUser';
 import { IUser } from '../../types/user';
-import { getCurrentUser } from '../../utils/utils';
 
+import { ChalengedDialog } from './components/ChalengedDialog';
 import EnemyItem from './components/EnemyItem';
+import { WaitingEnemyDialog } from './components/WaitingEnemyDialog';
 import { Wrapper } from './styled';
 
 export const SearchPage = () => {
-  // const preloadedUsers = useLoaderData() as IUser[];
-
   const [users, setUsers] = useState<IUser[]>([]);
-  const currentUser = getCurrentUser();
+  const [isWaitingForEnemy, setIsWaitingForEnemy] = useState(false);
+  const [userBeenChalenged, setUserBeenChalenged] = useState(false);
+  const [enemyId, setEnemyId] = useState(0);
+  const { currentUser } = useCurrentUser();
+
+  const navigate = useNavigate();
 
   const socket = io(SOCKET_URL);
 
   useEffect(() => {
-    socket.on('new user', data => {
-      setUsers(prev => [JSON.parse(data), ...prev]);
-    });
+    if (currentUser) {
+      socket.on('new user', data => {
+        setUsers(prev => {
+          const newUser = JSON.parse(data).user as IUser;
+          if (prev.some(u => u.id === newUser.id && currentUser.id !== u.id)) return prev;
+          return [newUser, ...prev];
+        });
+      });
 
-    socket.on('join to search', data => setUsers(JSON.parse(data)));
+      socket.on('join to search', data => {
+        setUsers(JSON.parse(data));
+      });
 
-    socket.emit('search', JSON.stringify({ user: currentUser }));
-  }, []);
+      socket.on('leave search', data =>
+        setUsers(prev => {
+          return prev.filter(e => e.id !== data);
+        })
+      );
+
+      socket.on('notify enemy', data => {
+        const { from, to } = JSON.parse(data);
+        if (currentUser.id === to) {
+          setUserBeenChalenged(true);
+          setEnemyId(from);
+        }
+      });
+
+      socket.on('decline match', data => {
+        if (currentUser.id === +data && userBeenChalenged) {
+          setUserBeenChalenged(false);
+        }
+
+        if (currentUser.id === +data) {
+          setIsWaitingForEnemy(false);
+        }
+        setEnemyId(0);
+      });
+
+      socket.on('accept game', data => {
+        const { gameId, userId } = JSON.parse(data);
+        if (currentUser.id === +userId) {
+          navigate(`/game/${gameId}/${enemyId}`);
+        }
+      });
+
+      socket.emit('search', JSON.stringify({ user: currentUser }));
+    }
+
+    return () => {
+      socket.emit('leave search', currentUser?.id);
+      socket.off('new user');
+      socket.off('join to search');
+      socket.off('notify enemy');
+      socket.off('leave search');
+      socket.off('decline match');
+      socket.off('accept game');
+    };
+  }, [currentUser, enemyId]);
+
+  const notifyEnemy = (id: number) => {
+    socket.emit('notify enemy', JSON.stringify({ from: currentUser?.id, to: id }));
+    setIsWaitingForEnemy(true);
+    setEnemyId(id);
+  };
+
+  const closeWaitingEnemyDialog = () => {
+    socket.emit('decline match', enemyId);
+    setIsWaitingForEnemy(false);
+  };
+
+  const closeChallengedDialog = () => {
+    socket.emit('decline match', enemyId);
+    setUserBeenChalenged(false);
+  };
+
+  const acceptGameHandler = () => {
+    const gameId = v4();
+    socket.emit('accept game', JSON.stringify({ gameId: gameId, userId: enemyId }));
+
+    navigate(`/game/${gameId}/${enemyId}`);
+  };
 
   return (
     <Wrapper>
+      {!!users.length ? (
+        <Typography fontWeight={600} fontSize={24} component="h2">
+          Players looking for a game
+        </Typography>
+      ) : (
+        <Typography fontWeight={600} fontSize={24} component="h2">
+          No players looking for a game
+        </Typography>
+      )}
       {users.map(user => (
-        <EnemyItem key={user.id} user={user} />
+        <EnemyItem key={user.id} user={user} notifyEnemy={notifyEnemy} />
       ))}
+      <WaitingEnemyDialog open={isWaitingForEnemy} closeHandler={closeWaitingEnemyDialog} />
+      <ChalengedDialog
+        open={userBeenChalenged}
+        closeHandler={closeChallengedDialog}
+        acceptHandler={acceptGameHandler}
+      />
     </Wrapper>
   );
 };

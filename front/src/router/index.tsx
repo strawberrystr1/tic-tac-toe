@@ -6,7 +6,6 @@ import { Profile } from '../components/Profile';
 import { SearchPage } from '../components/SeachPage';
 import { IUser } from '../types/user';
 import { getRequest } from '../utils/dataLoaders';
-import { getCurrentUser } from '../utils/utils';
 
 export const router = createBrowserRouter([
   {
@@ -18,7 +17,7 @@ export const router = createBrowserRouter([
     element: <Profile />,
     loader: async ({ params }) => {
       const user = await getRequest<IUser[]>(`/user/${params.id}`);
-      localStorage.setItem('currentUser', JSON.stringify(user[0]));
+      sessionStorage.setItem('currentUser', JSON.stringify(user[0]));
 
       return user[0];
     },
@@ -26,15 +25,15 @@ export const router = createBrowserRouter([
   {
     path: '/search',
     element: <SearchPage />,
-    loader: async () => {
-      const currentUser = getCurrentUser();
-      const users = await getRequest<IUser[]>(`/user?except=${currentUser.id}`);
-
-      return users;
-    },
   },
   {
-    path: '/game/:gameId',
+    path: '/game/:gameId/:enemyId',
     element: <GamePage />,
+    loader: async ({ params }) => {
+      const { enemyId } = params;
+      const enemy: IUser[] = await getRequest(`/user/${enemyId}`);
+
+      return enemy[0];
+    },
   },
 ]);

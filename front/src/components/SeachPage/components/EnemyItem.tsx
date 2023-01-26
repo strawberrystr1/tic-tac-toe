@@ -1,19 +1,15 @@
 import { FC, memo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 
 import { IProps } from '../../../types/searchPage';
-import { getCurrentUser } from '../../../utils/utils';
 
 import { Block, Wrapper } from './styled';
 
-const EnemyItem: FC<IProps> = ({ user }) => {
-  const navigate = useNavigate();
-
-  const currentUser = getCurrentUser();
-
-  const clickHandler = () => navigate(`/game/${user.id}-vs-${currentUser.id}`);
+const EnemyItem: FC<IProps> = ({ user, notifyEnemy }) => {
+  const clickHandler = () => {
+    notifyEnemy(user.id);
+  };
 
   return (
     <Wrapper>
