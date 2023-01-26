@@ -14,7 +14,7 @@ export const Cell = styled(Box)`
 `;
 
 export const HistoryWrapper = styled(Box)`
-  width: 25%;
+  width: 30%;
   height: 100%;
   overflow: auto;
   display: flex;

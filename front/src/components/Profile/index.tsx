@@ -4,12 +4,13 @@ import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 
 import { UserContext } from '../../App';
-import { IUser } from '../../types/user';
+import { ILoaderData } from '../../types/profilePage';
 
+import { HistoryItem } from './components/HistoryItem';
 import { Avatar, SideWrapper, Wrapper } from './styled';
 
 export const Profile = () => {
-  const user = useLoaderData() as IUser;
+  const { user, history } = useLoaderData() as ILoaderData;
   const navigate = useNavigate();
   const { setCurrentUser } = useContext(UserContext);
 
@@ -33,7 +34,14 @@ export const Profile = () => {
           Find a game
         </Button>
       </SideWrapper>
-      <SideWrapper>asd</SideWrapper>
+      <SideWrapper>
+        <Typography component="h2" fontSize={22} fontWeight={600}>
+          Games history
+        </Typography>
+        {history.histories.map(item => (
+          <HistoryItem history={item} key={item.gameId} currentUser={user} />
+        ))}
+      </SideWrapper>
     </Wrapper>
   );
 };

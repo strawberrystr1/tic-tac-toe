@@ -8,6 +8,7 @@ import { useCurrentUser } from '../../hooks/useCurrentUser';
 import { GameEvents, GameIcons, IStep } from '../../types/gamePage';
 import { IUser } from '../../types/user';
 import { postRequest } from '../../utils/dataLoaders';
+import { getGameResult } from '../../utils/utils';
 import { winChecker } from '../../utils/winChecker';
 
 import GameCell from './components/GameCell';
@@ -74,12 +75,18 @@ export const GamePage = () => {
       });
 
       socket.on(GameEvents.END_GAME, data => {
-        let resultString = `User ${data} win`;
-        if (currentUser.id === +data) {
-          resultString += '\n Congratulations';
+        let resultString = '';
+        if (+data < 0) {
+          resultString = 'Draw\n Better luck next time';
         } else {
-          resultString += '\n Better luck next time';
+          resultString = `User ${data} win`;
+          if (currentUser.id === +data) {
+            resultString += '\n Congratulations';
+          } else {
+            resultString += '\n Better luck next time';
+          }
         }
+
         setGameResult(resultString);
       });
 
@@ -103,6 +110,11 @@ export const GamePage = () => {
         GameEvents.END_GAME,
         JSON.stringify({ winner: result === userIcon, userId: currentUser?.id, gameId })
       );
+      return;
+    }
+    if (!cells.some(e => e === 0) && !gameResult) {
+      setUserTurn(false);
+      socket.emit(GameEvents.END_GAME, JSON.stringify({ winner: 'draw', gameId }));
     }
   }, [cells]);
 
@@ -123,6 +135,8 @@ export const GamePage = () => {
     postRequest('/history', {
       userId: currentUser?.id,
       steps,
+      winner: getGameResult(gameResult),
+      gameId,
     });
   };
 

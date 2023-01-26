@@ -69,7 +69,7 @@ const createGameSocketHandlers = (
         users: 1,
         firstIcon: 0,
         secondIcon: 0,
-        winner: 0,
+        winner: 0
       };
 
       const icon = Math.random() > 0.5 ? 1 : 2;
@@ -96,8 +96,10 @@ const createGameSocketHandlers = (
   socket.on(GameEvents.END_GAME, data => {
     const { winner, userId, gameId } = JSON.parse(data);
 
-    if (winner) {
+    if (typeof winner === "boolean") {
       games[gameId].winner = userId;
+    } else {
+      games[gameId].winner = -1;
     }
 
     socket.to(gameId).emit(GameEvents.END_GAME, games[gameId].winner);

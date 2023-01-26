@@ -25,5 +25,9 @@ export const SideWrapper = styled(Box)`
   display: flex;
   flex-direction: column;
   width: 49%;
+  height: 100%;
+  align-items: center;
+  overflow: auto;
   border: 1px solid black;
+  padding: 10px;
 `;

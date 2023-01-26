@@ -6,13 +6,13 @@ import { v4 } from 'uuid';
 
 import { SOCKET_URL } from '../../constants';
 import { useCurrentUser } from '../../hooks/useCurrentUser';
+import { SearchEvents } from '../../types/searchPage';
 import { IUser } from '../../types/user';
 
 import { ChalengedDialog } from './components/ChalengedDialog';
 import EnemyItem from './components/EnemyItem';
 import { WaitingEnemyDialog } from './components/WaitingEnemyDialog';
 import { Wrapper } from './styled';
-import { SearchEvents } from '../../types/searchPage';
 
 export const SearchPage = () => {
   const [users, setUsers] = useState<IUser[]>([]);

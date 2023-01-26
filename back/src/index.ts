@@ -6,6 +6,9 @@ import bodyParser from "body-parser";
 import router from "./routes/index";
 import dbClient from "./db";
 import createSocketHandlers from "./createSocketHandlers";
+import User from "./models/user.model";
+import History from "./models/history.model";
+import UsersHistory from "./models/userhistory.model";
 
 const runServer = async () => {
   const app = express();
@@ -35,6 +38,9 @@ const runServer = async () => {
   const port = process.env.PORT || 4000;
 
   try {
+    User.belongsToMany(History, { through: UsersHistory });
+    History.belongsToMany(User, { through: UsersHistory });
+
     await dbClient.authenticate();
     await dbClient.sync({ alter: true });
 

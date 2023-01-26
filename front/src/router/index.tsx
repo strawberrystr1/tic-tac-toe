@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import { GamePage } from '../components/GamePage';
+import { HistoryPage } from '../components/HistoryPage';
 import { LoginForm } from '../components/LoginForm';
 import { Profile } from '../components/Profile';
 import { SearchPage } from '../components/SeachPage';
@@ -17,9 +18,10 @@ export const router = createBrowserRouter([
     element: <Profile />,
     loader: async ({ params }) => {
       const user = await getRequest<IUser[]>(`/user/${params.id}`);
+      const history = await getRequest(`/history?id=${user[0].id}`);
       sessionStorage.setItem('currentUser', JSON.stringify(user[0]));
 
-      return user[0];
+      return { user: user[0], history };
     },
   },
   {
@@ -35,5 +37,9 @@ export const router = createBrowserRouter([
 
       return enemy[0];
     },
+  },
+  {
+    path: '/history/:gameId',
+    element: <HistoryPage />,
   },
 ]);
