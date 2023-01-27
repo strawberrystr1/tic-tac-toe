@@ -15,6 +15,7 @@ export const Profile = () => {
   const { setCurrentUser } = useContext(UserContext);
 
   const handleClick = () => navigate('/search');
+  const handleLeaderboardClick = () => navigate('/leaderboard');
 
   useEffect(() => {
     setCurrentUser(user);
@@ -31,8 +32,11 @@ export const Profile = () => {
         <Typography fontSize={24} sx={{ mb: 3 }}>
           Rating: {user.rating}
         </Typography>
-        <Button onClick={handleClick} variant="contained">
+        <Button onClick={handleClick} variant="contained" sx={{ mb: 2 }}>
           Find a game
+        </Button>
+        <Button onClick={handleLeaderboardClick} color="success" variant="contained">
+          Leaderboard
         </Button>
       </SideWrapper>
       <SideWrapper>

@@ -119,6 +119,7 @@ export const GamePage = () => {
     }
     if (!cells.some(e => e === 0) && !gameResult) {
       setUserTurn(false);
+      setWinnerId(-1);
       socket.emit(GameEvents.END_GAME, JSON.stringify({ winner: 'draw', gameId }));
     }
   }, [cells]);
@@ -148,6 +149,8 @@ export const GamePage = () => {
       rating:
         winnerId === currentUser?.id
           ? currentUser.rating + 25
+          : winnerId < 0
+          ? currentUser?.rating
           : (currentUser?.rating as number) - 25,
     });
   };

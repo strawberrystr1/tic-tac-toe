@@ -5,7 +5,6 @@ import UsersHistory from "../models/userhistory.model";
 import { ICreateHistoryPayload } from "../types/history";
 
 export const createHistory = async (data: ICreateHistoryPayload) => {
-  console.log("data: ", data);
   const history = await History.findOrCreate({
     where: {
       gameId: data.gameId
@@ -13,7 +12,6 @@ export const createHistory = async (data: ICreateHistoryPayload) => {
     defaults: {
       steps: JSON.stringify(data.steps),
       winner: data.winner,
-      userId: data.userId,
       gameId: data.gameId
     }
   });

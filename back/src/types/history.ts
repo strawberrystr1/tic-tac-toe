@@ -20,5 +20,4 @@ export interface IHistoryCreate {
   steps: string;
   winner: number;
   gameId: string;
-  userId: number;
 }

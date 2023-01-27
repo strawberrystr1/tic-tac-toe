@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { GamePage } from '../components/GamePage';
 import { HistoryPage } from '../components/HistoryPage';
+import { Leaderboard } from '../components/Leaderboard';
 import { LoginForm } from '../components/LoginForm';
 import { Profile } from '../components/Profile';
 import { SearchPage } from '../components/SeachPage';
@@ -41,5 +42,14 @@ export const router = createBrowserRouter([
   {
     path: '/history/:gameId',
     element: <HistoryPage />,
+  },
+  {
+    path: '/leaderboard',
+    element: <Leaderboard />,
+    loader: async () => {
+      const users: IUser[] = await getRequest('/user');
+
+      return users.sort((a, b) => b.rating - a.rating);
+    },
   },
 ]);

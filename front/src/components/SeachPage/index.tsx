@@ -39,11 +39,11 @@ export const SearchPage = () => {
         setUsers(JSON.parse(data));
       });
 
-      socket.on(SearchEvents.LEAVE_SEARCH, data =>
+      socket.on(SearchEvents.LEAVE_SEARCH, data => {
         setUsers(prev => {
           return prev.filter(e => e.id !== data);
-        })
-      );
+        });
+      });
 
       socket.on(SearchEvents.NOTIFY_ENEMY, data => {
         const { from, to } = JSON.parse(data);
