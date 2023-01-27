@@ -5,21 +5,18 @@ export const getCurrentUser = () => {
   return JSON.parse(sessionStorage.getItem('currentUser') as string) as IUser;
 };
 
-export const getGameResult = (result: string) => {
-  if (/Draw/g.test(result)) {
-    return -1;
-  } else {
-    const user = result.split(' ').find(e => +e);
-    console.log(user);
-    return user;
-  }
-};
-
-export const createHistoryCells = (matrix: number[][], steps: IStep[]) => {
-  console.log('steps: ', steps);
-  return matrix;
-};
-
 export const createEmptyGameMatrix = (size: number) => {
-  return new Array(size).fill(new Array(size).fill(0));
+  const outer = new Array(size).fill(0);
+  return outer.map(() => new Array(size).fill(0));
+};
+
+export const createHistoryCells = (size: number, steps: IStep[], pointer: number) => {
+  const copy = createEmptyGameMatrix(size);
+
+  steps.slice(0, pointer).forEach(step => {
+    const [row, column] = step.cell;
+    copy[row][column] = step.icon;
+  });
+
+  return copy;
 };

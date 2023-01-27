@@ -8,7 +8,6 @@ import { useCurrentUser } from '../../hooks/useCurrentUser';
 import { GameEvents, GameIcons, IStep } from '../../types/gamePage';
 import { IUser } from '../../types/user';
 import { postRequest } from '../../utils/dataLoaders';
-import { getGameResult } from '../../utils/utils';
 import { winChecker } from '../../utils/winChecker';
 
 import GameCell from './components/GameCell';
@@ -28,6 +27,7 @@ export const GamePage = () => {
   const [userTurn, setUserTurn] = useState(false);
   const [gameResult, setGameResult] = useState('');
   const [steps, setSteps] = useState<IStep[]>([]);
+  const [winnerId, setWinnerId] = useState(-1);
 
   const socket = io(SOCKET_URL);
 
@@ -79,7 +79,7 @@ export const GamePage = () => {
         if (+data < 0) {
           resultString = 'Draw\n Better luck next time';
         } else {
-          resultString = `User ${data} win`;
+          resultString = `User ${currentUser.id === +data ? currentUser.name : enemy.name} win`;
           if (currentUser.id === +data) {
             resultString += '\n Congratulations';
           } else {
@@ -106,9 +106,14 @@ export const GamePage = () => {
     const result = winChecker(cells, 3);
     if (result) {
       setUserTurn(false);
+      setWinnerId(result === userIcon ? (currentUser?.id as number) : enemy.id);
       socket.emit(
         GameEvents.END_GAME,
-        JSON.stringify({ winner: result === userIcon, userId: currentUser?.id, gameId })
+        JSON.stringify({
+          winner: result === userIcon,
+          userId: result === userIcon ? currentUser?.id : enemy.id,
+          gameId,
+        })
       );
       return;
     }
@@ -135,8 +140,15 @@ export const GamePage = () => {
     postRequest('/history', {
       userId: currentUser?.id,
       steps,
-      winner: getGameResult(gameResult),
+      winner: winnerId,
       gameId,
+    });
+    postRequest('/user/rating', {
+      id: currentUser?.id,
+      rating:
+        winnerId === currentUser?.id
+          ? currentUser.rating + 25
+          : (currentUser?.rating as number) - 25,
     });
   };
 
@@ -152,7 +164,7 @@ export const GamePage = () => {
                 {userIcon === 1 ? ' X' : ' O'}
               </Typography>
             </Typography>
-            <Typography>{userTurn ? 'Your turn' : 'Enemy turn'}</Typography>
+            <Typography>{userTurn && 'Your turn'}</Typography>
           </UserBlock>
           <UserBlock sx={{ bgcolor: userTurn ? '#ce412e7c' : '#9de67b7d' }}>
             <Typography>Enemy: {enemy?.name}</Typography>
@@ -162,7 +174,7 @@ export const GamePage = () => {
                 {userIcon === 1 ? ' O' : ' X'}
               </Typography>
             </Typography>
-            <Typography>{!userTurn ? 'Your turn' : 'Enemy turn'}</Typography>
+            <Typography>{!userTurn && 'Enemy turn'}</Typography>
           </UserBlock>
         </HeadBlock>
         {isGameStarted && (

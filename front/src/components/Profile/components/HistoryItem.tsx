@@ -12,7 +12,7 @@ export const HistoryItem: FC<IHistoryItemProps> = ({ history, currentUser }) => 
   const { steps, winner, gameId, users } = history;
 
   const handleClick = () => {
-    navigate(`/history/${gameId}`, { state: { steps, currentUser, user: users[0] } });
+    navigate(`/history/${gameId}`, { state: { steps, currentUser, user: users[0], winner } });
   };
 
   return (

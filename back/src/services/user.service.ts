@@ -34,3 +34,9 @@ export const getUsersById = async (ids: number[]) => {
 
   return users.map(e => e.toJSON());
 };
+
+export const updateUserRating = async (id: number, rating: number) => {
+  await User.update({ rating }, { where: { id } });
+
+  return { msg: "User rating updated" };
+};

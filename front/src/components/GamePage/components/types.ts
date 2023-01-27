@@ -22,3 +22,8 @@ export interface IUSerBlockProps {
 export interface IHistoryProps {
   steps: IStep[];
 }
+
+export interface IHistoryElementProps {
+  clickHandler?: (step: IStep) => void;
+  step: IStep;
+}

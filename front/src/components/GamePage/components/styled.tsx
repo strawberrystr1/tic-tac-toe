@@ -20,11 +20,11 @@ export const HistoryWrapper = styled(Box)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-left: 1px solid white;
-  border-right: 1px solid white;
 `;
 
 export const HistoryItem = styled(Box)`
+  width: 100%;
   border: 1px solid white;
   padding: 5px;
+  text-align: center;
 `;

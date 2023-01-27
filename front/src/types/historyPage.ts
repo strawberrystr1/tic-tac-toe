@@ -4,4 +4,5 @@ export interface IHistoryPageState {
   user: IUser;
   currentUser: IUser;
   steps: string;
+  winner: number;
 }

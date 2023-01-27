@@ -2,12 +2,14 @@ import { FC, memo } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
 
+import { GameIcons } from '../../../types/gamePage';
+
 import { Cell } from './styled';
 import { ICellProps } from './types';
 
 const cellIcons = {
-  1: <CloseIcon fontSize="large" />,
-  2: <PanoramaFishEyeIcon fontSize="large" />,
+  [GameIcons.X_ICON]: <CloseIcon fontSize="large" />,
+  [GameIcons.O_ICON]: <PanoramaFishEyeIcon fontSize="large" />,
 };
 
 const GameCell: FC<ICellProps> = ({ cell, index, clickHandler }) => {

@@ -14,6 +14,10 @@ const User = dbClient.define<Model<IUser, IUserCreation>>(
     name: {
       type: DataTypes.TEXT,
       allowNull: false
+    },
+    rating: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1000,
     }
   },
   {

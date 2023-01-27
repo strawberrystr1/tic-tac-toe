@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 
 import { IProps } from '../../../types/searchPage';
 
-import { Block, Wrapper } from './styled';
+import { Wrapper } from './styled';
 
 const EnemyItem: FC<IProps> = ({ user, notifyEnemy }) => {
   const clickHandler = () => {
@@ -13,10 +13,24 @@ const EnemyItem: FC<IProps> = ({ user, notifyEnemy }) => {
 
   return (
     <Wrapper>
-      <Block>
-        <Typography>User: {user.name}</Typography>
-        <Typography>ID: {user.id}</Typography>
-      </Block>
+      <Typography>
+        <Typography component="span" fontWeight={600}>
+          ID:
+        </Typography>{' '}
+        {user.id}
+      </Typography>
+      <Typography>
+        <Typography component="span" fontWeight={600}>
+          User:
+        </Typography>{' '}
+        {user.name}
+      </Typography>
+      <Typography>
+        <Typography component="span" fontWeight={600}>
+          User rating:
+        </Typography>{' '}
+        {user.rating}
+      </Typography>
       <Button
         sx={{ width: '120px', alignSelf: 'flex-end' }}
         onClick={clickHandler}

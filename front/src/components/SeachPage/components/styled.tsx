@@ -14,5 +14,4 @@ export const Wrapper = styled(Box)`
 export const Block = styled(Box)`
   width: 100%;
   display: flex;
-  justify-content: space-evenly;
 `;

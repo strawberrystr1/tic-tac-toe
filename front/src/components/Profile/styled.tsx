@@ -28,6 +28,5 @@ export const SideWrapper = styled(Box)`
   height: 100%;
   align-items: center;
   overflow: auto;
-  border: 1px solid black;
   padding: 10px;
 `;

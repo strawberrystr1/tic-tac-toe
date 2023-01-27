@@ -16,6 +16,9 @@ export const GameCell = styled(Box)`
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #ffffff;
+`;
+
+export const HistoryItemWrapper = styled(Box)`
   cursor: pointer;
-  background-color: white;
 `;
