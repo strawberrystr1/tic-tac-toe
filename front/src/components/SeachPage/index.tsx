@@ -8,6 +8,7 @@ import { SOCKET_URL } from '../../constants';
 import { useCurrentUser } from '../../hooks/useCurrentUser';
 import { SearchEvents } from '../../types/searchPage';
 import { IUser } from '../../types/user';
+import { Header } from '../Header';
 
 import { ChalengedDialog } from './components/ChalengedDialog';
 import EnemyItem from './components/EnemyItem';
@@ -109,25 +110,28 @@ export const SearchPage = () => {
   };
 
   return (
-    <Wrapper>
-      {!!users.length ? (
-        <Typography fontWeight={600} fontSize={24} component="h2">
-          Players looking for a game
-        </Typography>
-      ) : (
-        <Typography fontWeight={600} fontSize={24} component="h2">
-          No players looking for a game
-        </Typography>
-      )}
-      {users.map(user => (
-        <EnemyItem key={user.id} user={user} notifyEnemy={notifyEnemy} />
-      ))}
-      <WaitingEnemyDialog open={isWaitingForEnemy} closeHandler={closeWaitingEnemyDialog} />
-      <ChalengedDialog
-        open={userBeenChalenged}
-        closeHandler={closeChallengedDialog}
-        acceptHandler={acceptGameHandler}
-      />
-    </Wrapper>
+    <>
+      <Header />
+      <Wrapper>
+        {!!users.length ? (
+          <Typography fontWeight={600} fontSize={24} component="h2">
+            Players looking for a game
+          </Typography>
+        ) : (
+          <Typography fontWeight={600} fontSize={24} component="h2">
+            No players looking for a game
+          </Typography>
+        )}
+        {users.map(user => (
+          <EnemyItem key={user.id} user={user} notifyEnemy={notifyEnemy} />
+        ))}
+        <WaitingEnemyDialog open={isWaitingForEnemy} closeHandler={closeWaitingEnemyDialog} />
+        <ChalengedDialog
+          open={userBeenChalenged}
+          closeHandler={closeChallengedDialog}
+          acceptHandler={acceptGameHandler}
+        />
+      </Wrapper>
+    </>
   );
 };

@@ -9,6 +9,7 @@ import { IHistoryPageState } from '../../types/historyPage';
 import { createEmptyGameMatrix, createHistoryCells } from '../../utils/utils';
 import { HistoryElement } from '../GamePage/components/HistoryItem';
 import { GameArea } from '../GamePage/styled';
+import { Header } from '../Header';
 import { SideWrapper } from '../Profile/styled';
 
 import { GameCell, HistoryItemWrapper, Wrapper } from './styled';
@@ -44,31 +45,34 @@ export const HistoryPage = () => {
   };
 
   return (
-    <Wrapper>
-      <SideWrapper>
-        <Typography fontWeight={600} fontSize={40}>
-          Winner: {winner === currentUser.id ? currentUser.name : user.name}
-        </Typography>
-        <GameArea>
-          {cells.map(row => {
-            return row.map(cell => <GameCell key={Math.random()}>{icons[cell]}</GameCell>);
-          })}
-        </GameArea>
-      </SideWrapper>
-      <SideWrapper>
-        <Typography fontSize={30}>Game history</Typography>
-        {steps.map((step, i) => (
-          <HistoryItemWrapper
-            key={step.cell.join()}
-            sx={{
-              width: '70%',
-              '&>div': { bgcolor: `${currentStepPointer - 1 === i ? '#89e70d' : 'transparent'}` },
-            }}
-          >
-            <HistoryElement step={step} clickHandler={handleHistoryItemClick} />
-          </HistoryItemWrapper>
-        ))}
-      </SideWrapper>
-    </Wrapper>
+    <>
+      <Header />
+      <Wrapper>
+        <SideWrapper>
+          <Typography fontWeight={600} fontSize={40}>
+            Winner: {winner === currentUser.id ? currentUser.name : user.name}
+          </Typography>
+          <GameArea>
+            {cells.map(row => {
+              return row.map(cell => <GameCell key={Math.random()}>{icons[cell]}</GameCell>);
+            })}
+          </GameArea>
+        </SideWrapper>
+        <SideWrapper>
+          <Typography fontSize={30}>Game history</Typography>
+          {steps.map((step, i) => (
+            <HistoryItemWrapper
+              key={step.cell.join()}
+              sx={{
+                width: '70%',
+                '&>div': { bgcolor: `${currentStepPointer - 1 === i ? '#89e70d' : 'transparent'}` },
+              }}
+            >
+              <HistoryElement step={step} clickHandler={handleHistoryItemClick} />
+            </HistoryItemWrapper>
+          ))}
+        </SideWrapper>
+      </Wrapper>
+    </>
   );
 };
